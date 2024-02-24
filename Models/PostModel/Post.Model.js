@@ -87,6 +87,10 @@ const postSchema = new mongoose.Schema(
       required: false,
       unique: true,
     },
+    hashtags: {
+      type: [String],
+      required: false,
+    }
   },
   {
     timestamps: true,

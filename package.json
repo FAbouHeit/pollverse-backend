@@ -2,14 +2,26 @@
   "name": "pollverse-backend",
   "version": "1.0.0",
   "description": "Backend for Pollverse social media app",
-  "main": "server.js",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
   },
   "author": "Fuad Abou Heit",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.4",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.3.0",
+    "mongoose": "^8.1.3",
+    "slugify": "^1.6.6"
+  },
+  "devDependencies": {
     "nodemon": "^3.0.3"
   }
 }
