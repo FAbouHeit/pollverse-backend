@@ -1,11 +1,7 @@
-//delete one
-//delete all
-
 import mongoose from "mongoose";
 import User from "../Models/UserModel/User.Model.js";
 import Activity from "../Models/ActivityModel/Activity.Model.js";
 
-//add one
 export const addActivity = async (req,res) => {
     const {userId, activity} = req.body;
 

@@ -1,5 +1,3 @@
-//sendMessage
-
 import mongoose from "mongoose";
 import User from "../Models/UserModel/User.Model.js";
 import Chat from "../Models/ChatModel/Chat.Model.js";

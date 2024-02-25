@@ -5,6 +5,7 @@ import Post from "../Models/PostModel/Post.Model.js";
 import Comment from "../Models/CommentModel/Comment.Model.js"
 import mongoose from "mongoose";
 import User from "../Models/UserModel/User.Model.js";
+import recursiveDelete from "../Utils/recursiveDelete.js";
 
 export const createComment = async (req, res) => {
     const { userId, text, type, parentId } = req.body;
@@ -112,6 +113,8 @@ export const deleteComment = async (req,res) => {
 
     try{
         await Comment.findByIdAndDelete(commentId);
+
+        recursiveDelete(commentId);
                 
         return res.status(200).json({ message: "Comment deleted successfully."});
 
