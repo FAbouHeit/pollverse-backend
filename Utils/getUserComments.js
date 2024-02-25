@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Comment from "../Models/CommentModel/Comment.Model";
+import Comment from "../Models/CommentModel/Comment.Model.js";
 
 export const getUserComments = async (userId) => {
     const commentIds = await Comment.aggregate([

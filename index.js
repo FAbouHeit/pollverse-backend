@@ -5,6 +5,16 @@ import connect from './Config/Mongo.Config.js';
 import cookieParser from "cookie-parser";
 dotenv.config();
 
+import activityRouter from "./Routes/Activity.Routes.js";
+import chatRouter from "./Routes/Chat.Routes.js";
+import commentRouter from "./Routes/Comment.Routes.js";
+import notificationRouter from "./Routes/Notifications.Routes.js";
+import postRouter from "./Routes/Post.Routes.js";
+import transactionRouter from "./Routes/Transaction.Routes.js";
+import userRouter from "./Routes/User.Routes.js";
+
+
+
 const PORT = process.env.PORT || 6666;
 const app = express();
 app.use(express.json());
@@ -19,6 +29,14 @@ const corsOption = {
 app.use(cookieParser());
 app.use(cors(corsOption));
 
+app.use('/activity', activityRouter);
+app.use('/chat', chatRouter);
+app.use('/comment', commentRouter);
+app.use('/notification', notificationRouter);
+app.use('/post', postRouter);
+app.use('/transaction', transactionRouter);
+app.use('/user', userRouter);
+
 app.listen(PORT, ()=>{
     connect();
     console.log(`running on port: ${PORT}`);
@@ -26,3 +44,7 @@ app.listen(PORT, ()=>{
         console.log("ERROR: issue reading port from process.env. Continue with caution! ...");
     }
 })
+
+//add socket io
+//add authentication, authorization
+//add node mailer

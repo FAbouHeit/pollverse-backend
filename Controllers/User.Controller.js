@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import fs from 'fs';
 import slugify from "slugify";
 import mongoose from "mongoose";
-import { generateToken } from "../utils/Jwt.js";
+import { generateToken } from "../Utils/Jwt.js";
 import { isAlphaOnly } from "../Utils/isAlphaOnly.js";
 import { isProfanity } from "../Utils/ProfanityCheck/profanityCheck.js";
 import User from "../Models/UserModel/User.Model.js";

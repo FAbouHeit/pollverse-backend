@@ -2,9 +2,9 @@
 //sent a report (send post id)
 
 import mongoose from "mongoose";
-import Post from "../Models/PostModel/Post.Model";
-import User from "../Models/UserModel/User.Model";
-import { isProfanity } from "../Utils/ProfanityCheck/profanityCheck";
+import Post from "../Models/PostModel/Post.Model.js";
+import User from "../Models/UserModel/User.Model.js";
+import { isProfanity } from "../Utils/ProfanityCheck/profanityCheck.js";
 
 export const createPost = async (req, res) => {
     const { userId, caption, type, options, visibility, isSponsored } = req.body;

@@ -1,4 +1,4 @@
-import Comment from '../models/CommentModel.js';
+import Comment from '../Models/CommentModel/Comment.Model.js';
 
 const recursiveDelete = async (commentId) => {
     try {

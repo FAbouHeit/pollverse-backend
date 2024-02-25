@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { ageVerify, emailVerify, roleVerify } from "./User.Verify.js";
 
-const mapSchema = new Schema({
+const mapSchema = new mongoose.Schema({
   key: {
     type: String,
     required: true,

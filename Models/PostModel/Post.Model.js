@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { typeVerify, visibilityVerify } from "./Post.Verify";
+import { typeVerify, visibilityVerify } from "./Post.Verify.js";
 
 const postSchema = new mongoose.Schema(
   {
