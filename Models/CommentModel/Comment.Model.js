@@ -16,7 +16,7 @@ const commentSchema = new mongoose.Schema(
         enum: ['comment', 'reply'],
         message: "Invalid comment type.",
       },
-      parent: {
+      parentId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
       },
@@ -31,6 +31,6 @@ const commentSchema = new mongoose.Schema(
     }
   );
 
-const CommentModel = mongoose.model('CommentModel', commentSchema);
+const Comment = mongoose.model('CommentModel', commentSchema);
 
-export default CommentModel;
+export default Comment;

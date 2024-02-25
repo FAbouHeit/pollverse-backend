@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
     },
     tokenAmount: {
-      type: String,
+      type: Number,
       required: true,
       min: 0,
     },
@@ -94,6 +94,31 @@ const userSchema = new mongoose.Schema(
       type: Map,
       of: mapSchema,
       required: false,
+    },
+    activationCode: {
+      type: Number,
+      required: false,
+    },
+    activationCodeCreatedAt: {
+      type: Date,
+      required: false,
+    },
+    likedPosts : {
+      type: [mongoose.Schema.Types.ObjectId],
+      required: true,
+    },
+    posts: {
+      type: [{
+        postId: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+        },
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+        },
+      }],
+      required: true,
     },
   },
   {

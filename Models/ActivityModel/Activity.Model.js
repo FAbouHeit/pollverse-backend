@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { typeVerify } from './Activity.Verify.js';
 
-const ActivityModel = new mongoose.Schema({
+const activitySchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -11,7 +11,7 @@ const ActivityModel = new mongoose.Schema({
         required: true,
         maxlength: 120,
     },
-    type: {
+    activity: {
         type: String,
         enum: ["addRequest", "postLike", "postShare", "postComment", "report"],
         required: true,
@@ -22,4 +22,7 @@ const ActivityModel = new mongoose.Schema({
     },
   },{timestamps: true});
   
-export const Activity = mongoose.model('Activity', ActivityModel);
+  const Activity = mongoose.model('Activity', activitySchema);
+
+export default Activity;
+

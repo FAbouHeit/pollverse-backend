@@ -90,7 +90,15 @@ const postSchema = new mongoose.Schema(
     hashtags: {
       type: [String],
       required: false,
-    }
+    },
+    edited: {
+      type: Boolean,
+      required: true,
+    },
+    isSponsored: {
+      type: Boolean,
+      required: true,
+    },
   },
   {
     timestamps: true,
