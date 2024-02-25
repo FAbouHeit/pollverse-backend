@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { typeVerify } from './Notification.Verify.js';
 
-const NotificationModel = new mongoose.Schema({
+const notificationSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -22,4 +22,6 @@ const NotificationModel = new mongoose.Schema({
     },
   },{timestamps: true});
   
-export const Notification = mongoose.model('Notification', NotificationModel);
+  const Notification = mongoose.model('Notification', notificationSchema);
+
+export default Notification;

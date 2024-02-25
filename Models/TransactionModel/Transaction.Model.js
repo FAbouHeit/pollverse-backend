@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { typeVerify } from './Transaction.Verify.js';
+import { statusVerify } from './Transaction.Verify.js';
 
-const TransactionModel = new mongoose.Schema({
+const transactionSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
@@ -14,7 +14,7 @@ const TransactionModel = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["approved", "pending"],
+        enum: ["approved", "pending", "rejected"],
         required: true,
         validate: {
             validator: statusVerify,
@@ -23,4 +23,6 @@ const TransactionModel = new mongoose.Schema({
     },
   },{timestamps: true});
   
-export const Transaction = mongoose.model('Transaction', TransactionModel);
+  const Transaction = mongoose.model('Transaction', transactionSchema);
+
+export default Transaction;

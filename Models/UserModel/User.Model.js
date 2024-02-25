@@ -68,6 +68,7 @@ const userSchema = new mongoose.Schema(
         roomId: {
           type: String,
           required: true,
+          unique: true,
         }
       }],
       required: true,

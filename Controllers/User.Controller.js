@@ -1,4 +1,5 @@
 //get users?
+//delete users + comments + notifications + transactions...
 
 import User from "../Models/UserModel/User.Model.js";
 import bcrypt from "bcrypt";

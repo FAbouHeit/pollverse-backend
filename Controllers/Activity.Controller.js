@@ -13,7 +13,7 @@ export const addActivity = async (req,res) => {
         return res.status(400).json({ error: "Error(401) Invalid user id." });
     }
 
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
 
     if(!user){
         return res.status(404).json({ error: "Error(402) User not found." });
@@ -107,7 +107,7 @@ export const deleteAllActivities = async (req,res) => {
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).json({ error: "Error(409) Activity not found." });
+      return res.status(404).json({ error: "Error(409) User not found." });
     }
 
     try {

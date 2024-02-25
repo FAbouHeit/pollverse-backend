@@ -1,15 +1,20 @@
 import mongoose from 'mongoose';
 
-const chatModel = new mongoose.Schema({
+const chatSchema = new mongoose.Schema({
     text: {
         type: String,
         required: true,
         maxlength: 500,
     },
-    sender: {
+    senderId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
     },
+    roomId: {
+        type: String,
+        required: true,
+    }
   },{timestamps: true});
   
-export const Chat = mongoose.model('Chat', chatModel);
+const Chat = mongoose.model('Chat', chatSchema);
+export default Chat;
