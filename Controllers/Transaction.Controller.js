@@ -1,6 +1,3 @@
-//create transaction
-//approve transaction
-//reject transaction
 import mongoose from 'mongoose';
 import Transaction from '../Models/TransactionModel/Transaction.Model.js'
 import User from '../Models/UserModel/User.Model.js';
