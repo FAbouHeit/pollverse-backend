@@ -1,6 +1,3 @@
-//get users?
-//delete users + comments + notifications + transactions...
-
 import bcrypt from "bcrypt";
 import fs from 'fs';
 import slugify from "slugify";
@@ -419,7 +416,6 @@ export const updateUser = async (req, res) => {
   }
 };
 
-
 export const removeFriend = async (req, res) => {
   const { userId, friendId } = req.body;
   
@@ -435,9 +431,11 @@ export const removeFriend = async (req, res) => {
   }
   
   try {
-    if (user.community.includes(friendId) && friend.community.includes(userId)) {
-      user.community = user.community.filter((id) => id !== friendId);
-      friend.community = friend.community.filter((id) => id !== userId);
+    if (user.community.some((object) => object.friendId === friendId) 
+    && friend.community.some((object) => object.friendId === userId)
+  ) {
+      user.community = user.community.filter((object) => object.friendId !== friendId);
+      friend.community = friend.community.filter((object) => object.friendId !== userId);
       await user.save();
       await friend.save();
       return res.status(200).json({ message: "Friend removed successfully." });
