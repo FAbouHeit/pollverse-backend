@@ -41,7 +41,7 @@ import {
   userRouter.post("/friend/add", addFriend);
   userRouter.post("/friend/remove", removeFriend);
   
-  userRouter.patch("/update-info", updateUser);
+  userRouter.patch("/update", updateUser);
   userRouter.patch("/change-profile-picture", upload.single("image"), changeProfilePicture);
   userRouter.patch("/remove-profile-picture", removeProfilePicture);
   userRouter.delete("/delete-post", deleteUserPost);

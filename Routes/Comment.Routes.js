@@ -13,7 +13,7 @@ import {
   commentRouter.post("/create", createComment);
   commentRouter.patch("/edit", editComment);
   commentRouter.delete("/delete", deleteComment); 
-  commentRouter.get("/get-all", getAllComments); 
+  commentRouter.get("/", getAllComments); 
   
   export default commentRouter;
   
