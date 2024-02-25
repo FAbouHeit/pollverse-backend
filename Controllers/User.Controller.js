@@ -1,15 +1,21 @@
 //get users?
 //delete users + comments + notifications + transactions...
 
-import User from "../Models/UserModel/User.Model.js";
 import bcrypt from "bcrypt";
-import { generateToken } from "../utils/Jwt.js";
-import slugify from "slugify";
-import { isAlphaOnly } from "../Utils/isAlphaOnly.js";
-import Post from "../Models/PostModel/Post.Model.js";
 import fs from 'fs';
-import { isProfanity } from "../Utils/ProfanityCheck/profanityCheck.js";
+import slugify from "slugify";
 import mongoose from "mongoose";
+import { generateToken } from "../utils/Jwt.js";
+import { isAlphaOnly } from "../Utils/isAlphaOnly.js";
+import { isProfanity } from "../Utils/ProfanityCheck/profanityCheck.js";
+import User from "../Models/UserModel/User.Model.js";
+import Post from "../Models/PostModel/Post.Model.js";
+import Activity from "../Models/ActivityModel/Activity.Model.js";
+import Notification from "../Models/NotificationModel/Notification.Model.js";
+import Transaction from "../Models/TransactionModel/Transaction.Model.js";
+import Comment from "../Models/CommentModel/Comment.Model.js";
+import { getUserComments } from "../Utils/getUserComments.js";
+import recursiveDelete from "../Utils/recursiveDelete.js";
 
 export const signIn = async (req, res) => {
     const { email, password } = req.body;
@@ -303,11 +309,28 @@ export const addFriend = async (req,res)=>{
   if(!user || !friend){
     return res.status(404).json({ error: "Error(128) User or friend not found."});
   }
+
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let roomId = '';
+  for (let i = 0; i < 12; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    roomId += characters[randomIndex];
+  }
+
+  const userObject = {
+    friendId: friendId,
+    roomId: roomId,
+  }
+
+  const friendObject = {
+    friendId: userId,
+    roomId: roomId,
+  }
   
  try{
     if(!user.community.includes(friendId) && !friend.community.includes(userId)){
-        user.community.push(friendId);
-        friend.community.push(userId);
+        user.community.push(userObject);
+        friend.community.push(friendObject);
         await user.save();
         await friend.save();
         return res.status(200).json({ message: "Friend added successfully." });
@@ -614,4 +637,42 @@ export const deleteUserPost = async (req,res) =>{
   } catch (err) {
     return res.status(500).json({ error: "Error(165) Internal server error." });
   }
+}
+
+export const deleteUser = async (req,res) =>{
+  const { userId } = req.body;
+
+  if (!mongoose.isValidObjectId(userId)) {
+    return res.status(400).json({ error: "Error(166) Invalid user id." });
+  }
+  
+  const user = await User.findById(userId);
+  
+  if (!user) {
+    return res.status(404).json({ error: "Error(167) User not found." });
+  }
+
+  try{
+    await User.findByIdAndDelete(userId);
+    await Activity.deleteMany({userId});
+    await Notification.deleteMany({userId});
+    await Transaction.deleteMany({userId});
+    await Post.deleteMany({userId});
+
+    const commentArray = getUserComments(userId);
+
+    await Comment.deleteMany({userId});
+
+    if(commentArray.length > 0){
+      for(let i=0; i< commentArray.length; i++){
+        recursiveDelete(commentArray[i]);
+      }
+    }
+
+    return res.status(200).json({ message: "User deleted successfully."});
+  
+  } catch (err) {
+    return res.status(500).json({ error: "Error(168) Internal server error." });
+  }
+
 }
