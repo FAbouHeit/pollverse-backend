@@ -8,6 +8,9 @@ import {
   addLike,
   addShare,
   addComment,
+  getPublicPosts,
+  getFriendsPrivatePosts,
+  getUserPosts,
 } from "../Controllers/Post.Controller.js";
 
   
@@ -21,6 +24,11 @@ import {
   postRouter.post("/like", addLike);
   postRouter.post("/share", addShare);
   postRouter.post("/comment", addComment); 
+
+  postRouter.get("/", getPublicPosts);
+  postRouter.get("/private", getFriendsPrivatePosts);
+  postRouter.get("/user", getUserPosts);
+
   
   export default postRouter;
   

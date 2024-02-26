@@ -169,7 +169,12 @@ export const createPost = async (req, res) => {
           return res.status(400).json({ error: "Error(217) Error creating post. Check database." });
         }
 
-        user.posts = user.posts.push(newPost._id);
+        const postObject = {
+          userId,
+          postId: newPost._id,
+        }
+
+        user.posts = user.posts.push(postObject);
         await user.save();
 
         return res.status(200).json({ message: "Post created successfully."});
@@ -297,21 +302,31 @@ export const addLike = async (req,res) => {
 
 
 export const addShare = async (req,res) => {
-    const { postId } = req.body;
+    const { postId, userId } = req.body;
 
-    if (!mongoose.isValidObjectId(postId)) {
-        return res.status(400).json({ error: "Error(235) Invalid post id." });
+    if (!mongoose.isValidObjectId(postId) || !!mongoose.isValidObjectId(userId)) {
+        return res.status(400).json({ error: "Error(235) Invalid post or user id." });
     }
 
     const post = await Post.findById(postId);
+    const user = await User.findById(userId);
 
-    if (!post) {
-      return res.status(404).json({ error: "Error(236) Post not found." });
+    if (!post || !user) {
+      return res.status(404).json({ error: "Error(236) Post or user not found." });
+    }
+
+    const postObject = {
+      postId,
+      userId,
     }
 
     try{
         post.shares = post.shares +1;
         await post.save();
+
+        user.posts.push(postObject);
+        await user.save();
+        
 
         return res.status(200).json({ message: "Share added successfully."});
 
@@ -328,7 +343,7 @@ export const addComment = async (req,res)=>{
         return res.status(400).json({ error: "Error(238) Invalid post or comment id input."});
     }
     
-    const post = await User.findById(postId);
+    const post = await Post.findById(postId);
     const comment = await Comment.findById(commentId);
     
     if(!post || !comment){
@@ -349,4 +364,79 @@ export const addComment = async (req,res)=>{
         return res.status(500).json({ error: "Error(241) Internal server error."});
     }
   }
+//////////////////////////////////////////////////////////////////////////////////
+  export const getPublicPosts = async (req, res) => {
+    try {
+      const publicPosts = await Post.find({ visibility: "public" });
+      return res.status(200).json(publicPosts);
+    } catch (error) {
+      return res.status(500).json({ error: "Error(242) Internal server error."});
+    }
+  };
+
+  export const getFriendsPrivatePosts = async (req, res) => {
+    const {userId} = req.body;
+    
+    if(!mongoose.isValidObjectId(userId)){
+        return res.status(400).json({ error: "Error(243) Invalid user id."});
+    }
+    
+    const validUser = await User.findById(userId);
+    
+    if(!validUser){
+      return res.status(404).json({ error: "Error(244) User not found."});
+    }
+
+
+    try {
+      const user = await User.findById(userId).populate({
+        path: 'community.friendId',
+        populate: {
+          path: 'posts',
+          match: { visibility: 'private' },
+        },
+      });
+  
+      const privatePosts = user.community.reduce((acc, friend) => {
+        if (friend.posts && friend.posts.length > 0) {
+          acc = acc.concat(friend.posts);
+        }
+        return acc;
+      }, []);
+  
+      return res.status(200).json(privatePosts);
+    } catch (error) {
+      return res.status(500).json({ error: "Error(245) Internal server error."});
+    }
+  };
+
+
+  export const getUserPosts = async (req, res) => {
+    const {userId} = req.body;
+    
+    if(!mongoose.isValidObjectId(userId)){
+        return res.status(400).json({ error: "Error(246) Invalid user id."});
+    }
+    
+    const user = await User.findById(userId);
+    
+    if(!validUser){
+      return res.status(404).json({ error: "Error(247) User not found."});
+    }
+
+    try{
+    const postIds = user.posts.map(post => post.postId);
+    const userPosts = await Post.find({ _id: { $in: postIds } });
+
+    return res.status(200).json(userPosts);
+
+    } catch (err) {
+      return res.status(500).json({ error: "Error(248) Internal server error."});
+    }
+  };
+
+
+  //get friends posts
+  //get public posts
+  //get my posts
   

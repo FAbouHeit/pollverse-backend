@@ -23,6 +23,7 @@ import {
   deleteUser,
   getAllUsers,
   getOneUser,
+  sendFriendRequest
 } from "../Controllers/User.Controller.js";
   
   const userRouter = express.Router();
@@ -42,6 +43,7 @@ import {
 
   userRouter.post("/friend/add", addFriend);
   userRouter.post("/friend/remove", removeFriend);
+  userRouter.post("/friend/request", sendFriendRequest);
   
   userRouter.patch("/update", updateUser);
   userRouter.patch("/change-profile-picture", upload.single("image"), changeProfilePicture);
