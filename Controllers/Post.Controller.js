@@ -29,6 +29,10 @@ export const createPost = async (req, res) => {
       ){
       return res.status(400).json({ error: "Error(203) Invalid post input." });
     }
+
+    if(isSponsored === true || user.tokenAmount < 20){
+      return res.status(400).json({ error: "Error(203.1) Insufficient user tokens." });
+    }
     
     const profanityFlag = await isProfanity(caption.trim().split(/\s+/));
 
@@ -129,6 +133,12 @@ export const createPost = async (req, res) => {
     }
 
     try{
+
+        if(isSponsored === true){
+          user.tokenAmount = user.tokenAmount - 20;
+          visibility = "public";
+        }
+
         if(postHashtags.length >= 1){
             for(let i=0; i < postHashtags.length; i++){
                 

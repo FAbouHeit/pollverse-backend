@@ -881,3 +881,50 @@ export const getOneUser = async (req, res) => {
     return res.status(500).json({ error: "Error(172) Internal server error." });
   }
 };
+
+export const sendFriendRequest = async (req, res) => {
+  const { userId, friendId } = req.body;
+
+  if (userId === friendId) {
+    return res
+      .status(400)
+      .json({ error: "Error(173) Cannot add yourself as a friend." });
+  }
+
+  if (
+    !mongoose.isValidObjectId(userId) ||
+    !mongoose.isValidObjectId(friendId)
+  ) {
+    return res
+      .status(400)
+      .json({ error: "Error(174) Invalid user or friend id input." });
+  }
+
+  const user = await User.findById(userId);
+  const friend = await User.findById(friendId);
+
+  if (!user || !friend) {
+    return res
+      .status(404)
+      .json({ error: "Error(175) User or friend not found." });
+  }
+
+  try {
+    if (
+      !user.friendReqSent.includes(friendId) &&
+      !friend.friendReqReceived.includes(userId)
+    ) {
+      user.friendReqSent.push(friendId);
+      friend.friendReqReceived.push(userId);
+      await user.save();
+      await friend.save();
+      return res.status(200).json({ message: "Friend request sent successfully." });
+    } else {
+      return res
+        .status(400)
+        .json({ error: "Error(176) Friend request already sent." });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: "Error(177) Internal server error." });
+  }
+};

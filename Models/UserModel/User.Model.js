@@ -78,6 +78,14 @@ const userSchema = new mongoose.Schema(
       }],
       required: true,
     },
+    friendReqSent:{
+      type: [mongoose.Schema.Types.ObjectId],
+      unique: true,
+    },
+    friendReqReceived:{
+      type: [mongoose.Schema.Types.ObjectId],
+      unique: true,
+    },
     profilePic: {
       type: String,
       required: false,
