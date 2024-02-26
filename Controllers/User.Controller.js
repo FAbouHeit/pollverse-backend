@@ -71,7 +71,34 @@ export const signIn = async (req, res) => {
 
       if(!isAlphaOnly(firstName) || !isAlphaOnly(lastName)){
         return res.status(400).json({ error: "Error(107) Names can only contain letters [A-Z, a-z]." });
-      } 
+      }
+      
+      const genders = ["male", "female", "unspecified"];
+
+      if(!genders.includes(gender)){
+        return res.status(400).json({ error: "Error(107.1) Invalid gender input." });
+      }
+
+      const date = new Date(dateOfBirth);
+      const currentDate = new Date();
+      const thirteenYearsAgo = new Date(currentDate);
+      thirteenYearsAgo.setFullYear(thirteenYearsAgo.getFullYear() - 13);
+      if(date > thirteenYearsAgo){
+        return res.status(400).json({ error: "Error(107.2) User must be over 13 years of age." });
+      }
+
+      const hasNumber = /\d/.test(password);
+      const hasCapitalLetter = /[A-Z]/.test(password);
+      const hasCharacter = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
+      const isLongEnough = password.length;
+      if(
+        !hasNumber
+        || !hasCapitalLetter
+        || !hasCharacter
+        || isLongEnough < 6
+      ){
+        return res.status(400).json({ error: "Error(107.3) Invalid password input." });
+      }
 
       const fullName = [firstName, lastName].join(" ");
 
@@ -125,7 +152,7 @@ export const signIn = async (req, res) => {
       .status(200)
       .json(newUser);
     } catch (error) {
-      return res.status(500).json({ err: "Error(110) Internal Server Error", msg: error });
+      return res.status(500).json({ err: "Error(110) Internal Server Error"});
     }
   };
   
@@ -250,14 +277,26 @@ export const addShare = async (req, res) =>{
 }
 
 export const activateAccount = async (req, res) =>{
-  const {userId} = req.body;
-  
-  if(!mongoose.isValidObjectId(userId)){
-      return res.status(400).json({ error: "Error(121) Invalid user id input."});
+  const activationCode = req.params.code;
+
+  if(!activationCode){
+    return res.status(400).json({ error: "Error(121) Invalid activation code."});
   }
   
-  const user = await User.findById(userId);
-  
+  const user = await User.findOne({ activationCode });
+
+  if(!user){
+    return res.status(400).json({ error: "Error(121.1) Invalid activation code."});
+  }
+
+  const fifteenMinutesAgo = new Date();
+  fifteenMinutesAgo.setMinutes(fifteenMinutesAgo.getMinutes() - 15);
+
+  const activationCodeDate = new Date(user.activationCodeCreatedAt);
+  if(activationCodeDate < fifteenMinutesAgo){
+    return res.status(400).json({ error: "Error(121.2) Expired activation code."});
+  }
+
   try{
       if(user.isActivated === false){
           user.isActivated = true;
@@ -503,7 +542,7 @@ export const addTokens = async (req, res) =>{
   try{
     let total = user.tokenAmount;
     total += amount;
-    user.tokenAmount = token;
+    user.tokenAmount = total;
     await user.save();
 
     return res.status(200).json({ message: "Tokens added successfully." });
@@ -674,3 +713,34 @@ export const deleteUser = async (req,res) =>{
   }
 
 }
+
+export const getAllUsers = async (req,res) => {
+  try {
+    const users = await User.find();
+    return res.status(200).json(users);
+  } catch (err) {
+    return res.status(500).json({ error: "Error(169) Internal server error." });
+  }
+}
+
+export const getOneUser = async (req, res) => {
+  const { userId } = req.body;
+
+  if (!mongoose.isValidObjectId(userId)) {
+    return res.status(400).json({ error: "Error(170) Invalid user id." });
+  }
+  
+  const user = await User.findById(userId);
+  
+  if (!user) {
+    return res.status(404).json({ error: "Error(171) User not found." });
+  }
+
+  try {
+
+    res.status(200).json(user);
+
+  } catch (error) {
+    return res.status(500).json({ error: "Error(172) Internal server error." });
+  }
+};

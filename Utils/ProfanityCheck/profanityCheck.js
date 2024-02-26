@@ -1,10 +1,16 @@
 import fs from 'fs';
 import csv from 'csv-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const readProfanityList = async () => {
     const profanityList = [];
+    const filePath = path.resolve(__dirname, 'profanity_list.csv');
     return new Promise((resolve, reject) => {
-        fs.createReadStream('profanity_list.csv')
+        fs.createReadStream(filePath)
             .pipe(csv())
             .on('data', (row) => {
                 profanityList.push(row.text);
@@ -27,3 +33,12 @@ export const isProfanity = async (words) => {
     }
     return false;
 }
+
+// (async () => {
+//     try {
+//         const check = await isProfanity(["ass"]);
+//         console.log(check);
+//     } catch (error) {
+//         console.error(error);
+//     }
+// })();

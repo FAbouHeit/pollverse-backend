@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema(
         message: "Not over 13 years old.",
       },
     },
+    gender: {
+      type: String,
+      required: false,
+      enum: ["male", "female", "unspecified"]
+    },
     password: {
       type: String,
       required: true,
@@ -97,7 +102,7 @@ const userSchema = new mongoose.Schema(
       required: false,
     },
     activationCode: {
-      type: Number,
+      type: String,
       required: false,
     },
     activationCodeCreatedAt: {

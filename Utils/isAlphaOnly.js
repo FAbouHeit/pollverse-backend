@@ -1,3 +1,3 @@
 export const isAlphaOnly = (string) => {
-    return /^[a-zA-Z]+$/.test(string);
-  }
+  return /^[a-zA-Z ]+$/.test(string);
+}

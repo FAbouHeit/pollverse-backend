@@ -2,7 +2,7 @@ export const emailVerify = (email) => {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-export const ageVerify = (dateString) => {
+export const ageVerify = (dateString) => { //"2010-01-01"
     const date = new Date(dateString);
     const currentDate = new Date();
     const thirteenYearsAgo = new Date(currentDate);

@@ -21,6 +21,8 @@ import {
   removeProfilePicture,
   deleteUserPost,
   deleteUser,
+  getAllUsers,
+  getOneUser,
 } from "../Controllers/User.Controller.js";
   
   const userRouter = express.Router();
@@ -33,10 +35,10 @@ import {
   userRouter.post("/add/comment", addComment);
   userRouter.post("/add/share", addShare);
 
-  userRouter.post("/account/activate", activateAccount);
-  userRouter.post("/account/verify", verifyAccount);
-  userRouter.post("/account/remove-verification", removeVerification);
-  userRouter.post("/account/create-verification-code", createActivationCode);
+  userRouter.patch("/account/activate/:code", activateAccount);
+  userRouter.patch("/account/verify", verifyAccount);
+  userRouter.patch("/account/remove-verification", removeVerification);
+  userRouter.post("/account/create-activation-code", createActivationCode);
 
   userRouter.post("/friend/add", addFriend);
   userRouter.post("/friend/remove", removeFriend);
@@ -49,6 +51,9 @@ import {
   userRouter.post("/add-tokens", addTokens);
 
   userRouter.delete("/delete-user", deleteUser);
+
+  userRouter.get("/", getAllUsers);
+  userRouter.get("/byId", getOneUser);
   
   export default userRouter;
   
