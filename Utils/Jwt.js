@@ -8,7 +8,7 @@ export const generateToken = (user) => {
     return jwt.sign(
         {
             id : user._id ,
-            name: user.name,
+            name: user.firstName,
             email: user.email,
             role: user.role,
         },

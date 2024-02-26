@@ -55,7 +55,7 @@ export const signIn = async (req, res) => {
   }
 };
 
-export const signUp = async (req, res, next) => {
+export const signUp = async (req, res) => {
   const { firstName, lastName, email, dateOfBirth, gender, password } =
     req.body;
 
@@ -927,4 +927,8 @@ export const sendFriendRequest = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: "Error(177) Internal server error." });
   }
+};
+
+export const signedInUser = (req, res) => {
+  return res.json({ user: req.user }).status(200);
 };

@@ -1,5 +1,5 @@
 import express from "express";
-// import { authenticate } from "../middleware/Auth.js";
+import { authenticate } from "../Middleware/Auth.js";
 import upload from "../Utils/Multer.js";
 
 import {
@@ -23,7 +23,8 @@ import {
   deleteUser,
   getAllUsers,
   getOneUser,
-  sendFriendRequest
+  sendFriendRequest,
+  signedInUser
 } from "../Controllers/User.Controller.js";
   
   const userRouter = express.Router();
@@ -31,6 +32,7 @@ import {
   userRouter.post("/sign-in", signIn);
   userRouter.post("/sign-up", signUp);
   userRouter.get("/sign-out", signOut);
+  userRouter.get("/signed-in-user", authenticate, signedInUser);
 
   userRouter.post("/add/like", addLike);
   userRouter.post("/add/comment", addComment);
