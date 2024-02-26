@@ -12,6 +12,7 @@ import notificationRouter from "./Routes/Notifications.Routes.js";
 import postRouter from "./Routes/Post.Routes.js";
 import transactionRouter from "./Routes/Transaction.Routes.js";
 import userRouter from "./Routes/User.Routes.js";
+import profanityRouter from "./Routes/Profanity.Router.js";
 
 
 
@@ -36,6 +37,7 @@ app.use('/notification', notificationRouter);
 app.use('/post', postRouter);
 app.use('/transaction', transactionRouter);
 app.use('/user', userRouter);
+app.use('/profanity', profanityRouter);
 
 app.listen(PORT, ()=>{
     connect();

@@ -56,7 +56,7 @@ export const createPost = async (req, res) => {
       return res.status(400).json({ error: "Error(207) Invalid post type." });
     }
 
-    if(type === "twoChoice" || type === "quiz"){
+    if(type === "twoChoice"){
         if(options.length !== 2){
             return res.status(400).json({ error: "Error(208) Invalid post options." });
         }
@@ -90,23 +90,33 @@ export const createPost = async (req, res) => {
         let correctOptionDetected = false; 
 
         for(let i=0; i < options.length; i++){
-            if(!isString(options[i].value)){
+            if(typeof(options[i].value) !== "boolean" || !isString(options[i].name)){
                 return res.status(400).json({ error: "Error(213) Invalid post options." });
             }
-            if( typeof(options[i].correct) !== "boolean"){
-                return res.status(400).json({ error: "Error(214) Invalid post options." });
-            }
-            if(options[i].correct === true){
+            if(options[i].value === true){
                 correctOptionDetected = true;
             }
-            postOptions.push({value: options[i].value, correct: options[i].correct, responses: 0});
+            postOptions.push({value: options[i].name, correct: options[i].value, responses: 0});
         }
 
         if(!correctOptionDetected){
-            return res.status(400).json({ error: "Error(215) Invalid post options." });
+            return res.status(400).json({ error: "Error(214) Invalid post options." });
         }
     }
 
+
+    if(type === "slider"){
+      if(options.length !== 2){
+          return res.status(400).json({ error: "Error(215) Invalid post options." });
+      }
+
+      for(let i=0; i < options.length; i++){
+          if(typeof(options[i].value) !== "number" || !isString(options[i].name)){
+              return res.status(400).json({ error: "Error(215.1) Invalid post options." });
+          }
+          postOptions.push({value: options[i].name, number: options[i].value, responses: 0});
+      }
+  }
     let slug = "post-";
   
     const characters =

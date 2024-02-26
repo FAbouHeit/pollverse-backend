@@ -34,6 +34,12 @@ const postSchema = new mongoose.Schema(
             return this.type === 'quiz'; // Only required for quiz type
           }
         },
+        number: {
+          type: Number,
+          required: function () {
+            return this.type === 'slider'; // Only required for slider type
+          }
+        },
         responses: {
           type: Number,
           required: true,
