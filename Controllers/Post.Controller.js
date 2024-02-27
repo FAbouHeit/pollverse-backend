@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import Post from "../Models/PostModel/Post.Model.js";
 import User from "../Models/UserModel/User.Model.js";
 import { isProfanity } from "../Utils/ProfanityCheck/profanityCheck.js";
+import slugify from "slugify";
 
 export const createPost = async (req, res) => {
     const { userId, caption, type, options, visibility, isSponsored } = req.body;
@@ -25,12 +26,17 @@ export const createPost = async (req, res) => {
       || !type
       || !options
       || !visibility
-      || !isSponsored
+      || isSponsored === undefined
       ){
+        // console.log(caption)
+        // console.log(type)
+        // console.log(options)
+        // console.log(visibility)
+        // console.log(isSponsored)
       return res.status(400).json({ error: "Error(203) Invalid post input." });
     }
 
-    if(isSponsored === true || user.tokenAmount < 20){
+    if(isSponsored === true && user.tokenAmount < 20){
       return res.status(400).json({ error: "Error(203.1) Insufficient user tokens." });
     }
     
@@ -44,7 +50,7 @@ export const createPost = async (req, res) => {
       return res.status(400).json({ error: "Error(205) Invalid post length." });
     }
 
-    const postVisibility = ["public, private"];
+    const postVisibility = ["public", "private"];
 
     if(!postVisibility.includes(visibility)){
         return res.status(400).json({ error: "Error(206) Invalid post type." });
@@ -62,7 +68,7 @@ export const createPost = async (req, res) => {
         }
 
         for(let i=0; i < options.length; i++){
-            if(!isString(options[i])){
+            if(typeof(options[i]) !== "string"){
                 return res.status(400).json({ error: "Error(209) Invalid post options." });
             }
             postOptions.push({value: options[i], responses: 0});
@@ -75,7 +81,7 @@ export const createPost = async (req, res) => {
         }
 
         for(let i=0; i < options.length; i++){
-            if(!isString(options[i])){
+            if(typeof(options[i]) != "string"){
                 return res.status(400).json({ error: "Error(211) Invalid post options." });
             }
             postOptions.push({value: options[i], responses: 0});
@@ -90,7 +96,7 @@ export const createPost = async (req, res) => {
         let correctOptionDetected = false; 
 
         for(let i=0; i < options.length; i++){
-            if(typeof(options[i].value) !== "boolean" || !isString(options[i].name)){
+            if(typeof(options[i].value) !== "boolean" || typeof(options[i].name) != "string"){
                 return res.status(400).json({ error: "Error(213) Invalid post options." });
             }
             if(options[i].value === true){
@@ -111,7 +117,7 @@ export const createPost = async (req, res) => {
       }
 
       for(let i=0; i < options.length; i++){
-          if(typeof(options[i].value) !== "number" || !isString(options[i].name)){
+          if(typeof(options[i].value) !== "number" || typeof(options[i].name) !== "string"){
               return res.status(400).json({ error: "Error(215.1) Invalid post options." });
           }
           postOptions.push({value: options[i].name, number: options[i].value, responses: 0});
@@ -159,7 +165,7 @@ export const createPost = async (req, res) => {
                 }
             }
         }
-        const newPost = await User.create({
+        const newPost = await Post.create({
             userId,
             caption,
             type,
@@ -178,13 +184,15 @@ export const createPost = async (req, res) => {
         if (!newPost) {
           return res.status(400).json({ error: "Error(217) Error creating post. Check database." });
         }
+        
 
         const postObject = {
           userId,
           postId: newPost._id,
         }
 
-        user.posts = user.posts.push(postObject);
+        console.log("heres");
+        user.posts.push(postObject);
         await user.save();
 
         return res.status(200).json({ message: "Post created successfully."});
