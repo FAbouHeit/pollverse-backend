@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
 import { ageVerify, emailVerify, roleVerify } from "./User.Verify.js";
 
-const mapSchema = new mongoose.Schema({
-  key: {
-    type: String,
-    required: true,
-  },
-  value: {
-    type: Number,
-    required: true,
-  },
-});
+// const mapSchema = new mongoose.Schema({
+//   key: {
+//     type: String,
+//     required: true,
+//   },
+//   value: {
+//     type: Number,
+//     required: true,
+//   },
+// });
 
 
 const userSchema = new mongoose.Schema(
@@ -106,8 +106,8 @@ const userSchema = new mongoose.Schema(
     },
     userMap: {
       type: Map,
-      of: mapSchema,
-      required: false,
+      // of: mapSchema,
+      required: true,
     },
     activationCode: {
       type: String,

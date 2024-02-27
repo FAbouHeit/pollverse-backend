@@ -79,6 +79,10 @@ const postSchema = new mongoose.Schema(
       required: true,
       min: 0
     },
+    likesUserId: {
+      type:[mongoose.Schema.Types.ObjectId],
+      required: true,
+    },
     comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'CommentModel',

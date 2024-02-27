@@ -11,6 +11,7 @@ export const generateToken = (user) => {
             name: user.firstName,
             email: user.email,
             role: user.role,
+            likedPosts: user.likedPosts,
         },
         secret,
         { expiresIn: "24h" }

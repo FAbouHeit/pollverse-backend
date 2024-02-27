@@ -173,6 +173,7 @@ export const createPost = async (req, res) => {
             visibility,
             responses: 0,
             likes: 0,
+            likesUserId: [],
             comments: [],
             shares: 0,
             slug: postSlug,
@@ -191,7 +192,6 @@ export const createPost = async (req, res) => {
           postId: newPost._id,
         }
 
-        console.log("heres");
         user.posts.push(postObject);
         await user.save();
 
@@ -231,28 +231,66 @@ export const addResponse = async (req, res) => {
       }
 }
 
-export const deletePost = async (req,res) => {
-    const { postId } = req.body;
+export const deletePost = async (req, res) => {
+  const { postId } = req.body;
 
-    if (!mongoose.isValidObjectId(postId)) {
-        return res.status(400).json({ error: "Error(223) Invalid post id." });
-    }
+  if (!mongoose.isValidObjectId(postId)) {
+    return res.status(400).json({ error: "Error(223) Invalid post id." });
+  }
 
-    const post = await Post.findById(postId);
+  const post = await Post.findById(postId);
 
-    if (!post) {
-      return res.status(404).json({ error: "Error(224) Post not found." });
-    }
+  if (!post) {
+    return res.status(404).json({ error: "Error(224) Post not found." });
+  }
 
-    try{
-        await Post.findByIdAndDelete(postId);
-                
-        return res.status(200).json({ message: "Post deleted successfully."});
+  try {
+    // Remove the post from users' posts arrays
+    const users = await User.find({ posts: { $elemMatch: { postId } } });
+    users.forEach(async (user) => {
+      user.posts = user.posts.filter((postObj) => postObj.postId.toString() !== postId);
+      await user.save();
+    });
 
-    } catch (err) {
-        return res.status(500).json({ error: "Error(225) Internal server error." });
-    }
-}
+    await Post.findByIdAndDelete(postId);
+
+    return res.status(200).json({ message: "Post deleted successfully." });
+
+  } catch (err) {
+    return res.status(500).json({ error: "Error(225) Internal server error." });
+  }
+};
+
+export const deleteSharedPost = async (req, res) => {
+  const { userId, postId } = req.body;
+
+  if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(postId)) {
+    return res.status(400).json({ error: "Error(225.1) Invalid user or post id." });
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(404).json({ error: "Error(225.2) User not found." });
+  }
+
+  const post = await Post.findById(postId);
+
+  if (!post) {
+    return res.status(404).json({ error: "Error(225.3) Post not found." });
+  }
+
+  try {
+    // Remove the post from user's posts arrays
+    user.posts = user.posts.filter((postObj) => postObj.postId.toString() !== postId);
+    await user.save();
+
+    return res.status(200).json({ message: "Post deleted successfully from user's shared posts." });
+
+  } catch (err) {
+    return res.status(500).json({ error: "Error(225.4) Internal server error." });
+  }
+};
 
 export const editCaption = async (req,res) => {
     const { userId, postId, newCaption } = req.body;
@@ -295,20 +333,26 @@ export const editCaption = async (req,res) => {
 }
 
 export const addLike = async (req,res) => {
-    const { postId } = req.body;
+    const { userId, postId } = req.body;
 
-    if (!mongoose.isValidObjectId(postId)) {
-        return res.status(400).json({ error: "Error(232) Invalid post id." });
+    if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(postId)) {
+      return res.status(400).json({ error: "Error(232) Invalid user or post id." });
     }
-
+  
+    const user = await User.findById(userId);
     const post = await Post.findById(postId);
+  
+    if (!user) {
+      return res.status(404).json({ error: "Error(233.1) User not found." });
+    } 
 
     if (!post) {
-      return res.status(404).json({ error: "Error(233) Post not found." });
+      return res.status(404).json({ error: "Error(234.1) Post not found." });
     }
 
     try{
         post.likes = post.likes +1;
+        post.likesUserId.push(userId),
         await post.save();
 
         return res.status(200).json({ message: "Like added successfully."});
@@ -318,6 +362,35 @@ export const addLike = async (req,res) => {
     }
 }
 
+export const removeLike = async (req,res) => {
+  const { userId, postId } = req.body;
+
+  if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(postId)) {
+    return res.status(400).json({ error: "Error(234.1) Invalid user or post id." });
+  }
+
+  const user = await User.findById(userId);
+  const post = await Post.findById(postId);
+
+  if (!user) {
+    return res.status(404).json({ error: "Error(234.2) User not found." });
+  } 
+
+  if (!post) {
+    return res.status(404).json({ error: "Error(234.3) Post not found." });
+  }
+
+  try{
+      post.likes = post.likes -1;
+      post.likesUserId.filter((id) => id !== userId),
+      await post.save();
+
+      return res.status(200).json({ message: "Like removed successfully."});
+
+  } catch (err) {
+      return res.status(500).json({ error: "Error(234.4) Internal server error." });
+  }
+}
 
 export const addShare = async (req,res) => {
     const { postId, userId } = req.body;

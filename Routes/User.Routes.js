@@ -7,6 +7,7 @@ import {
   signUp,
   signOut,
   addLike,
+  removeLike,
   addComment,
   addShare,
   activateAccount,
@@ -35,6 +36,7 @@ import {
   userRouter.get("/signed-in-user", authenticate, signedInUser);
 
   userRouter.post("/add/like", addLike);
+  userRouter.post("/remove/like", removeLike);
   userRouter.post("/add/comment", addComment);
   userRouter.post("/add/share", addShare);
 

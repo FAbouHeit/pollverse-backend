@@ -136,6 +136,8 @@ export const signUp = async (req, res) => {
       trim: true, // trim leading and trailing replacement chars, defaults to `true`
     });
 
+    const map = new Map;
+
     const newUser = await User.create({
       firstName,
       lastName,
@@ -150,7 +152,7 @@ export const signUp = async (req, res) => {
       community: [],
       profilePic: null,
       slug: userSlug,
-      userMap: null,
+      userMap: map,
       posts: [],
       likedPosts: [],
     });
@@ -205,27 +207,68 @@ export const addLike = async (req, res) => {
   try {
     const hashtagArray = post.hashtags;
 
-    if (hashtagArray) {
+    if (hashtagArray.length > 0) {
+      const updatedMap = user.userMap;
+    
       for (let i = 0; i < hashtagArray.length; i++) {
-        if (!user.userMap.has(hashtagArray[i])) {
-          user.userMap.set(hashtagArray[i], 3);
+        if (!updatedMap.has(hashtagArray[i])) {
+          // update[`userMap.${hashtagArray[i]}`] = 3;
+          updatedMap.set(hashtagArray[i] ,3);
         } else {
-          user.userMap.set(
-            hashtagArray[i],
-            user.userMap.get(hashtagArray[i]) + 3
-          );
+          // update[`userMap.${hashtagArray[i]}`] = user.userMap.get(hashtagArray[i]) + 3;
+          const newValue = updatedMap.get(hashtagArray[i]) + 3;
+          console.log("new", newValue);
+          updatedMap.set(hashtagArray[i],  newValue);
         }
       }
+    
+      user.userMap = updatedMap;
+      await user.save();
+      console.log("here");
+      // await User.updateOne({ _id: user._id }, { $set: update });
     }
 
-    user.likedPosts = user.likedPosts.push(postId);
-    await user.save();
+    if(!user.likedPosts.includes(postId)){
+      const newLikedPostsArray = [...user.likedPosts, postId]; 
+      user.likedPosts = newLikedPostsArray;
+      await user.save();
+    }
 
     return res.status(200).json({ message: "Like added successfully." });
   } catch (err) {
     return res
       .status(400)
-      .json({ error: "Error(114) Invalid updating user map." });
+      .json({ error: "Error(114) Invalid updating user map.", error: err });
+  }
+};
+
+
+export const removeLike = async (req, res) => {
+  const { postId, userId } = req.body;
+
+  if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(postId)) {
+    return res
+      .status(400)
+      .json({ error: "Error(114.1) invalid user or post id inputs" });
+  }
+
+  const user = await User.findById(userId);
+  const post = await Post.findById(postId);
+
+  if (!user || !post) {
+    return res.status(404).json({ error: "Error(114.2) User or post not found" });
+  }
+
+  try {
+
+    user.likedPosts = user.likedPosts.filter((id)=> id !== postId);
+    await user.save();
+
+    return res.status(200).json({ message: "Like removed successfully." });
+  } catch (err) {
+    return res
+      .status(400)
+      .json({ error: "Error(114.3) Internal server error." });
   }
 };
 
