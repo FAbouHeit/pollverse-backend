@@ -35,8 +35,8 @@ import {
   userRouter.get("/sign-out", signOut);
   userRouter.get("/signed-in-user", authenticate, signedInUser);
 
-  userRouter.post("/add/like", addLike);
-  userRouter.post("/remove/like", removeLike);
+  userRouter.post("/add/like",authenticate ,addLike);
+  userRouter.post("/remove/like", authenticate,removeLike);
   userRouter.post("/add/comment", addComment);
   userRouter.post("/add/share", addShare);
 

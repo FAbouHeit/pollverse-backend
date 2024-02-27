@@ -190,7 +190,7 @@ export const signOut = async (req, res) => {
 
 export const addLike = async (req, res) => {
   const { postId, userId } = req.body;
-
+  console.log("UserLIke", req.body)
   if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(postId)) {
     return res
       .status(400)
@@ -217,14 +217,12 @@ export const addLike = async (req, res) => {
         } else {
           // update[`userMap.${hashtagArray[i]}`] = user.userMap.get(hashtagArray[i]) + 3;
           const newValue = updatedMap.get(hashtagArray[i]) + 3;
-          console.log("new", newValue);
           updatedMap.set(hashtagArray[i],  newValue);
         }
       }
     
       user.userMap = updatedMap;
       await user.save();
-      console.log("here");
       // await User.updateOne({ _id: user._id }, { $set: update });
     }
 
@@ -252,26 +250,30 @@ export const removeLike = async (req, res) => {
       .json({ error: "Error(114.1) invalid user or post id inputs" });
   }
 
-  const user = await User.findById(userId);
-  const post = await Post.findById(postId);
-
-  if (!user || !post) {
-    return res.status(404).json({ error: "Error(114.2) User or post not found" });
-  }
-
   try {
+    const user = await User.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { likedPosts: postId } },
+      { new: true }
+    );
 
-    user.likedPosts = user.likedPosts.filter((id)=> id !== postId);
-    await user.save();
+    if (!user) {
+      return res.status(404).json({ error: "Error(114.2) User not found" });
+    }
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: "Error(114.3) Post not found" });
+    }
 
     return res.status(200).json({ message: "Like removed successfully." });
   } catch (err) {
     return res
       .status(400)
-      .json({ error: "Error(114.3) Internal server error." });
+      .json({ error: "Error(114.4) Internal server error." });
   }
 };
-
 export const addComment = async (req, res) => {
   const { postId, userId } = req.body;
 
@@ -972,6 +974,8 @@ export const sendFriendRequest = async (req, res) => {
   }
 };
 
-export const signedInUser = (req, res) => {
-  return res.json({ user: req.user }).status(200);
+export const signedInUser = async(req, res) => {
+  const user = await User.findById(req.user.id );
+
+  return res.json({ user: user}).status(200);
 };

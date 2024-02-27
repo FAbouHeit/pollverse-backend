@@ -333,6 +333,7 @@ export const editCaption = async (req,res) => {
 }
 
 export const addLike = async (req,res) => {
+    
     const { userId, postId } = req.body;
 
     if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(postId)) {
