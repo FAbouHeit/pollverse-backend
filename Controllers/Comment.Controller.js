@@ -6,6 +6,7 @@ import Comment from "../Models/CommentModel/Comment.Model.js"
 import mongoose from "mongoose";
 import User from "../Models/UserModel/User.Model.js";
 import recursiveDelete from "../Utils/recursiveDelete.js";
+import { isProfanity } from "../Utils/ProfanityCheck/profanityCheck.js";
 
 export const createComment = async (req, res) => {
     const { userId, text, type, parentId } = req.body;
@@ -31,12 +32,15 @@ export const createComment = async (req, res) => {
     if(profanityFlag){
         return res.status(400).json({ error: "Error(304) Profanity is not allowed." });
     }
+    let parentPost;
+    let parentComment;
 
     if(type === "comment"){
         const post = await Post.findById(parentId);
         if(!post){
             return res.status(404).json({ error: "Error(305) Parent not found." });
         }
+        parentPost = post;
     }
 
     if(type === "reply"){
@@ -44,6 +48,7 @@ export const createComment = async (req, res) => {
         if(!comment){
             return res.status(404).json({ error: "Error(306) Parent not found." });
         }
+        parentComment = comment;
     }
 
     try{
@@ -54,12 +59,27 @@ export const createComment = async (req, res) => {
             parentId,
             replies: [],
         });
+        
       
         if (!newComment) {
           return res.status(400).json({ error: "Error(307) Error creating comment. Check database." });
         }
 
-        return res.status(200).json({ message: "Post created successfully."});
+        if(parentPost){
+            const commentsArray = [...parentPost.comments];
+            commentsArray.push(newComment);
+            parentPost.comments = commentsArray;
+            await parentPost.save();
+        }
+
+        if(parentComment){
+            const commentsArray = [...parentComment.replies];
+            commentsArray.push(newComment);
+            parentComment.replies = commentsArray;
+            await parentComment.save();
+        }
+
+        return res.status(200).json({ message: "Comment created successfully."});
 
     } catch (err) {
         return res.status(500).json({ error: "Error(308) Internal server error."});
@@ -134,4 +154,21 @@ export const getAllComments = async (req,res) => {
       } catch (error) {
         return res.status(500).json({ error: "Error(316) Internal server error." });
       }
+}
+
+export const getCommentById = async (req,res)=>{
+    const commentId = req.body.commentId;
+
+    if (!mongoose.isValidObjectId(commentId)) {
+        return res.status(400).json({ error: "Error(317) Invalid comment id." });
+    }
+
+    try{
+        const comment = await Comment.findById(commentId);
+        return res.status(200).json(comment);
+    } catch(err){
+        return res.status(500).json({ error: "Error(318) Internal server error." });
+    }
+
+    
 }

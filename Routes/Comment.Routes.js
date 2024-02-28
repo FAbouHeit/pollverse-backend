@@ -5,6 +5,7 @@ import {
     editComment,
     deleteComment,
     getAllComments,
+    getCommentById,
 } from "../Controllers/Comment.Controller.js";
 
   
@@ -14,6 +15,7 @@ import {
   commentRouter.patch("/edit", editComment);
   commentRouter.delete("/delete", deleteComment); 
   commentRouter.get("/", getAllComments); 
+  commentRouter.get("/one", getCommentById); 
   
   export default commentRouter;
   

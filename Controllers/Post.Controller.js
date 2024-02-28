@@ -457,14 +457,48 @@ export const addComment = async (req,res)=>{
     }
   }
 //////////////////////////////////////////////////////////////////////////////////
+  // export const getPublicPosts = async (req, res) => {
+  //   try {
+  //     let publicPosts = await Post.find({ visibility: "public" })
+  //                                 .populate({
+  //                                   path: "comments",
+  //                                   populate: {
+  //                                     path: "userId",
+  //                                     model: "User"
+  //                                   }
+  //                                 }).exec();
+  //     return res.status(200).json(publicPosts);
+  //   } catch (error) {
+  //     return res.status(500).json({ error: "Error(242) Internal server error.", error: error});
+  //   }
+  // };
+
   export const getPublicPosts = async (req, res) => {
     try {
-      const publicPosts = await Post.find({ visibility: "public" });
+      let publicPosts = await Post.find({ visibility: "public" })
+                                    .populate({
+                                      path: "comments",
+                                      populate: {
+                                        path: "userId",
+                                        model: "User"
+                                      },
+                                      // Populate replies array in CommentModel
+                                      populate: {
+                                        path: "replies",
+                                        model: "CommentModel",
+                                        populate: {
+                                          path: "userId",
+                                          model: "User"
+                                        }
+                                      }
+                                    }).exec();
       return res.status(200).json(publicPosts);
     } catch (error) {
-      return res.status(500).json({ error: "Error(242) Internal server error."});
+      return res.status(500).json({ error: "Error(242) Internal server error.", error: error});
     }
   };
+
+
 
   export const getFriendsPrivatePosts = async (req, res) => {
     const {userId} = req.body;

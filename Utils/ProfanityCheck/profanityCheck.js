@@ -24,21 +24,23 @@ const readProfanityList = async () => {
     });
 };
 
+// export const isProfanity = async (words) => {
+//     const profanityList = await readProfanityList();
+//     for(let i = 0; i < words.length; i++){
+//         if(profanityList.includes(words[i])){
+//             return true;
+//         }
+//     }
+//     return false;
+// }
+
 export const isProfanity = async (words) => {
     const profanityList = await readProfanityList();
-    for(let i = 0; i < words.length; i++){
-        if(profanityList.includes(words[i])){
+    const sanitizedWords = words.map(word => word.replace(/[^\w\s]|_$/, '')); // Removes special characters from the end of each word
+    for(let i = 0; i < sanitizedWords.length; i++){
+        if(profanityList.includes(sanitizedWords[i])){
             return true;
         }
     }
     return false;
 }
-
-// (async () => {
-//     try {
-//         const check = await isProfanity(["ass"]);
-//         console.log(check);
-//     } catch (error) {
-//         console.error(error);
-//     }
-// })();
