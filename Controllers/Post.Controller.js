@@ -476,28 +476,54 @@ export const addComment = async (req,res)=>{
   export const getPublicPosts = async (req, res) => {
     try {
       let publicPosts = await Post.find({ visibility: "public" })
-                                    .populate({
-                                      path: "comments",
-                                      populate: {
-                                        path: "userId",
-                                        model: "User"
-                                      },
-                                      // Populate replies array in CommentModel
-                                      populate: {
-                                        path: "replies",
-                                        model: "CommentModel",
-                                        populate: {
-                                          path: "userId",
-                                          model: "User"
-                                        }
-                                      }
-                                    }).exec();
+    .populate({
+        path: "comments",
+        populate: [{
+            path: "userId",
+            model: "User"
+        }, {
+            path: "replies",
+            model: "CommentModel",
+            populate: {
+                path: "userId",
+                model: "User"
+            }
+        }]
+    })
+    .populate({
+        path: "userId", // Assuming this is the other userId field you want to populate
+        model: "User"
+    })
+    .exec();
       return res.status(200).json(publicPosts);
     } catch (error) {
       return res.status(500).json({ error: "Error(242) Internal server error.", error: error});
     }
   };
 
+
+  // export const getPublicPosts = async (req, res) => {
+  //   try {
+  //     let publicPosts = await Post.find({ visibility: "public" })
+  //   .populate({
+  //       path: "comments",
+  //       populate: [{
+  //           path: "userId",
+  //           model: "User"
+  //       }, {
+  //           path: "replies",
+  //           model: "CommentModel",
+  //           populate: {
+  //               path: "userId",
+  //               model: "User"
+  //           }
+  //       }]
+  //   }).exec();
+  //     return res.status(200).json(publicPosts);
+  //   } catch (error) {
+  //     return res.status(500).json({ error: "Error(242) Internal server error.", error: error});
+  //   }
+  // };
 
 
   export const getFriendsPrivatePosts = async (req, res) => {
