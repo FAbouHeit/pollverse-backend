@@ -8,10 +8,12 @@ export const generateToken = (user) => {
     return jwt.sign(
         {
             id : user._id ,
-            name: user.firstName,
+            firstName: user.firstName,
+            lastName: user.lastName,
             email: user.email,
             role: user.role,
             likedPosts: user.likedPosts,
+            responsedPosts: user.responsedPosts,
         },
         secret,
         { expiresIn: "24h" }

@@ -25,7 +25,9 @@ import {
   getAllUsers,
   getOneUser,
   sendFriendRequest,
-  signedInUser
+  signedInUser,
+  addUserResponse,
+  emptyResponseArray,
 } from "../Controllers/User.Controller.js";
   
   const userRouter = express.Router();
@@ -39,6 +41,9 @@ import {
   userRouter.post("/remove/like", authenticate,removeLike);
   userRouter.post("/add/comment", addComment);
   userRouter.post("/add/share", addShare);
+  userRouter.post("/add/response", addUserResponse);
+  userRouter.post("/remove/responses", emptyResponseArray);
+
 
   userRouter.patch("/account/activate/:code", activateAccount);
   userRouter.patch("/account/verify", verifyAccount);

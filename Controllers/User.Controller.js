@@ -13,6 +13,7 @@ import Transaction from "../Models/TransactionModel/Transaction.Model.js";
 import Comment from "../Models/CommentModel/Comment.Model.js";
 import { getUserComments } from "../Utils/getUserComments.js";
 import recursiveDelete from "../Utils/recursiveDelete.js";
+import { error } from "console";
 
 export const signIn = async (req, res) => {
   const { email, password } = req.body;
@@ -155,6 +156,7 @@ export const signUp = async (req, res) => {
       userMap: map,
       posts: [],
       likedPosts: [],
+      respondedPosts: [],
     });
 
     if (!newUser) {
@@ -973,6 +975,55 @@ export const sendFriendRequest = async (req, res) => {
     return res.status(500).json({ error: "Error(177) Internal server error." });
   }
 };
+
+export const addUserResponse = async (req,res) =>{
+  const {userId, postId, optionIndex} = req.body;
+
+  if(optionIndex === undefined || optionIndex===null){
+    return res.status(400).json({ error: "Error(177.1) Invalid option index." });
+    
+  }
+
+  if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(postId)) {
+    return res.status(400).json({ error: "Error(178) Invalid post or user id." });
+  }
+
+  const user = await User.findById(userId);
+  const post = await Post.findById(postId);
+
+  if (!user || !post) {
+    return res.status(404).json({ error: "Error(179) User or post not found." });
+  }
+
+  try{
+    const responsedPostsArray = [...user.respondedPosts];
+    const newResponse = {
+      postId,
+      optionIndex,
+    }
+    responsedPostsArray.push(newResponse);
+    user.respondedPosts = responsedPostsArray;
+    await user.save();
+    return res.status(200).json({ message: "User response added successfully." });
+
+  } catch (err){
+    return res.status(500).json({ error: "Error(180) Internal server error." });
+  }
+
+
+}
+
+export const emptyResponseArray = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const user = await User.findById(userId);
+    user.respondedPosts.splice(0, user.respondedPosts.length);
+    await user.save();
+    return res.status(200).json({ message: "User responses deleted successfully." });
+  } catch (err) {
+    return res.status(500).json(err.message);
+  }
+}
 
 export const signedInUser = async(req, res) => {
   const user = await User.findById(req.user.id );

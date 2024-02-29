@@ -121,6 +121,19 @@ const userSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       required: true,
     },
+    respondedPosts:{
+      type: [{
+        postId: {
+          type: mongoose.Schema.Types.ObjectId,
+          required: true,
+        },
+        optionIndex: {
+          type: Number,
+          required: true,
+        }
+      }],
+      required: true,
+    },
     posts: {
       type: [{
         postId: {
