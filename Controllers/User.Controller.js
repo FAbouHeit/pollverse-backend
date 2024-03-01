@@ -1015,6 +1015,7 @@ export const addUserResponse = async (req,res) =>{
 
 export const emptyResponseArray = async (req, res) => {
   const { userId } = req.body;
+  console.log("deleting responded posts")
   try {
     const user = await User.findById(userId);
     user.respondedPosts.splice(0, user.respondedPosts.length);

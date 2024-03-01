@@ -17,17 +17,17 @@ import profanityRouter from "./Routes/Profanity.Router.js";
 const PORT = process.env.PORT || 6666;
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-// const corsOption = {
-//   origin: process.env.FRONT_END_PATH,
-//   credentials: true,
-//   optionsSuccessStatus: 200,
-// };
+const corsOption = {
+  origin: process.env.FRONT_END_PATH,
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
 
 app.use(cookieParser());
-app.use(cors());
+app.use(cors(corsOption));
 
 app.use("/activity", activityRouter);
 app.use("/chat", chatRouter);
