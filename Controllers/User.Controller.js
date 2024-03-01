@@ -184,7 +184,7 @@ export const signUp = async (req, res) => {
 export const signOut = async (req, res) => {
   try {
     res.clearCookie("access_token");
-    return res.status(200).json({ message: "Logout successful." });
+    return res.status(200).json({ message: "SignOut successful." });
   } catch (err) {
     res.status(500).json({ error: "Error(111) Internal Server Error" });
   }
