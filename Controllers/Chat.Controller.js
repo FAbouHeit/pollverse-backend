@@ -15,14 +15,13 @@ export const sendMessage = async (req,res) =>{
         return res.status(404).json({ error: "Error(702) User not found." });
     }
 
-    if(!text || !isString(text) || text.length > 500){
+    if(!text || text.length > 500){
         return res.status(400).json({ error: "Error(703) Invalid text input." });
     }
 
-    if(!roomId || !isString(roomId)){
+    if(!roomId){
         return res.status(400).json({ error: "Error(704) Invalid room id." });
     }
-
     try{
         await Chat.create({
             text,
@@ -54,4 +53,14 @@ export const deleteMessagesByRoomId = async (req,res) =>{
       } catch (err) {
         res.status(500).json({ error: "Error(708) Internal server error." });
       }
+}
+
+export const getChat = async (req,res) => {
+    const {roomId} = req.body;
+    try{
+        const chat = await Chat.find({roomId: roomId})
+        return res.status(200).json({chat})
+    } catch (err) {
+        res.status(500).json({ error: "Error(710) Internal server error." });
+    }
 }

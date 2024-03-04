@@ -12,6 +12,7 @@ import {
   addShare,
   activateAccount,
   verifyAccount,
+  getFriends,
   addFriend,
   updateUser,
   removeFriend, //fix
@@ -30,6 +31,7 @@ import {
   signedInUser,
   addUserResponse,
   emptyResponseArray,
+  getRoomId,
 } from "../Controllers/User.Controller.js";
   
   const userRouter = express.Router();
@@ -52,6 +54,7 @@ import {
   userRouter.patch("/account/remove-verification", removeVerification);
   userRouter.post("/account/create-activation-code", createActivationCode);
 
+  userRouter.post("/friend/", getFriends);
   userRouter.post("/friend/add", addFriend);
   userRouter.post("/friend/remove", removeFriend);
   userRouter.post("/friend/request", sendFriendRequest);
@@ -64,6 +67,7 @@ import {
   userRouter.delete("/delete-post", deleteUserPost);
 
   userRouter.post("/add-tokens", addTokens);
+  userRouter.post("/get-room", getRoomId);
 
   userRouter.delete("/delete-user", deleteUser);
 

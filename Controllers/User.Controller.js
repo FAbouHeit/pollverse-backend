@@ -444,6 +444,27 @@ export const verifyAccount = async (req, res) => {
   }
 };
 
+export const getFriends = async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    // Find the user by ID and populate the 'community' field
+    const user = await User.findById(userId).populate({
+      path: 'community.friendId',
+      model: 'User'
+    });
+
+    // Extract the populated community friends
+    const communityFriends = user.community.map(item => item.friendId);
+
+    // Send the communityFriends array as a response
+    res.status(200).json({ communityFriends });
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 export const addFriend = async (req, res) => {
   const { userId, friendId } = req.body;
 
@@ -1139,3 +1160,31 @@ export const signedInUser = async(req, res) => {
 
   return res.json({ user: user}).status(200);
 };
+
+
+export const getRoomId = async (req,res) =>{
+  const {userId, friendId} = req.body;
+
+  if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(friendId)) {
+    return res.status(400).json({ error: "Error(181) Invalid post or user id." });
+  }
+
+  const user = await User.findById(userId);
+  const friend = await User.findById(friendId);
+
+  if (!user || !friend) {
+    return res.status(404).json({ error: "Error(182) User or friend not found." });
+  }
+
+  try{
+    let friendship = user.community.find((obj)=> obj.friendId.toString() === friendId.toString());
+    const roomId = friendship.roomId;
+
+    return res.status(200).json({ roomId });
+
+  } catch (err){
+    return res.status(500).json({ error: "Error(183) Internal server error." });
+  }
+
+
+}

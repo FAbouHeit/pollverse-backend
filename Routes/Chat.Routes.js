@@ -3,6 +3,7 @@ import express from "express";
 import {
     sendMessage,
     deleteMessagesByRoomId,
+    getChat,
 } from "../Controllers/Chat.Controller.js";
 
   
@@ -10,6 +11,7 @@ import {
   
   chatRouter.post("/send", sendMessage);
   chatRouter.delete("/delete", deleteMessagesByRoomId);
+  chatRouter.post("/get-room", getChat);
   
   export default chatRouter;
   

@@ -65,8 +65,9 @@ const userSchema = new mongoose.Schema(
     },
     community: [{
         friendId: {
-          type: String,
+          type: mongoose.Schema.Types.ObjectId,
           required: false,
+          ref: "Users",
         },
         roomId: {
           type: String,
