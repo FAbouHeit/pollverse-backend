@@ -14,6 +14,8 @@ export const generateToken = (user) => {
             role: user.role,
             likedPosts: user.likedPosts,
             responsedPosts: user.responsedPosts,
+            friendReqSent: user.friendReqSent,
+            friendReqReceived: user.friendReqReceived,
         },
         secret,
         { expiresIn: "24h" }

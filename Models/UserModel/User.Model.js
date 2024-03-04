@@ -63,29 +63,24 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       required: true,
     },
-    community: {
-      type: [{
+    community: [{
         friendId: {
-          type: mongoose.Schema.Types.ObjectId,
-          required: true,
-          unique: true,
+          type: String,
+          required: false,
         },
         roomId: {
           type: String,
-          required: true,
-          unique: true,
+          required: false,
         }
-      }],
-      required: true,
-    },
-    friendReqSent:{
-      type: [mongoose.Schema.Types.ObjectId],
-      unique: true,
-    },
-    friendReqReceived:{
-      type: [mongoose.Schema.Types.ObjectId],
-      unique: true,
-    },
+    }],
+    friendReqSent:[{
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+    }],
+    friendReqReceived:[{
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+    }],
     profilePic: {
       type: String,
       required: false,
@@ -107,7 +102,7 @@ const userSchema = new mongoose.Schema(
     userMap: {
       type: Map,
       // of: mapSchema,
-      required: true,
+      required: false,
     },
     activationCode: {
       type: String,
@@ -117,12 +112,12 @@ const userSchema = new mongoose.Schema(
       type: Date,
       required: false,
     },
-    likedPosts : {
-      type: [mongoose.Schema.Types.ObjectId],
+    likedPosts : [{
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
-    },
-    respondedPosts:{
-      type: [{
+    }],
+    respondedPosts:[{
+      type: {
         postId: {
           type: mongoose.Schema.Types.ObjectId,
           required: true,
@@ -131,11 +126,11 @@ const userSchema = new mongoose.Schema(
           type: Number,
           required: true,
         }
-      }],
+      },
       required: true,
-    },
-    posts: {
-      type: [{
+    }],
+    posts: [{
+      type: {
         postId: {
           type: mongoose.Schema.Types.ObjectId,
           required: true,
@@ -144,9 +139,9 @@ const userSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           required: true,
         },
-      }],
+      },
       required: true,
-    },
+    }],
   },
   {
     timestamps: true,

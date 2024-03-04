@@ -56,7 +56,7 @@ export const signIn = async (req, res) => {
   }
 };
 
-export const signUp = async (req, res) => {
+export const signUp = async (req, res, next) => {
   const { firstName, lastName, email, dateOfBirth, gender, password } =
     req.body;
 
@@ -137,6 +137,7 @@ export const signUp = async (req, res) => {
       trim: true, // trim leading and trailing replacement chars, defaults to `true`
     });
 
+
     const map = new Map;
 
     const newUser = await User.create({
@@ -150,13 +151,15 @@ export const signUp = async (req, res) => {
       tokenAmount: 0,
       isVerified: false,
       isActivated: false,
-      community: [],
       profilePic: null,
       slug: userSlug,
       userMap: map,
+      community: [],
       posts: [],
       likedPosts: [],
       respondedPosts: [],
+      friendReqSent: [],
+      friendReqReceived: [],
     });
 
     if (!newUser) {
@@ -164,6 +167,7 @@ export const signUp = async (req, res) => {
         .status(400)
         .json({ error: "Error(109) Error creating user. Check database." });
     }
+
 
     const token = generateToken(newUser);
 
@@ -176,8 +180,8 @@ export const signUp = async (req, res) => {
       .status(200)
       .json(newUser);
   } catch (error) {
-    // next(error)
-    return res.status(500).json({ err: "Error(110) Internal Server Error" });
+    console.log("error: ", error)
+    return res.status(500).json({ err: "Error(110) Internal Server Error", error });
   }
 };
 
@@ -481,11 +485,18 @@ export const addFriend = async (req, res) => {
 
   try {
     if (
-      !user.community.includes(friendId) &&
-      !friend.community.includes(userId)
+      !user.community.some((obj) => obj.friendId === friendId) &&
+      !friend.community.some((obj) => obj.friendId === userId)
     ) {
       user.community.push(userObject);
       friend.community.push(friendObject);
+
+      console.log("before: ", user.friendReqReceived)
+      user.friendReqReceived = user.friendReqReceived.filter((id) => id !== friendId);
+      friend.friendReqSent = user.friendReqSent.filter((id) => id !== userId);
+      console.log("after: ", user.friendReqReceived)
+
+
       await user.save();
       await friend.save();
       return res.status(200).json({ message: "Friend added successfully." });
@@ -957,24 +968,121 @@ export const sendFriendRequest = async (req, res) => {
   }
 
   try {
-    if (
-      !user.friendReqSent.includes(friendId) &&
-      !friend.friendReqReceived.includes(userId)
-    ) {
-      user.friendReqSent.push(friendId);
-      friend.friendReqReceived.push(userId);
-      await user.save();
-      await friend.save();
-      return res.status(200).json({ message: "Friend request sent successfully." });
-    } else {
-      return res
-        .status(400)
-        .json({ error: "Error(176) Friend request already sent." });
-    }
+
+    user.friendReqSent.push(friendId);
+    friend.friendReqReceived.push(userId);
+
+    await user.save();
+    await friend.save();
+    return res.status(200).json({ message: "Friend request sent successfully." });
+
   } catch (err) {
-    return res.status(500).json({ error: "Error(177) Internal server error." });
+    return res.status(500).json({ error: "Error(177) Internal server error.", err });
   }
 };
+
+
+
+export const declineFriendRequest = async (req, res) => {
+  const { userId, friendId } = req.body;
+
+  if (userId === friendId) {
+    return res
+      .status(400)
+      .json({ error: "Error(177.1) Cannot add yourself as a friend." });
+  }
+
+  if (
+    !mongoose.isValidObjectId(userId) ||
+    !mongoose.isValidObjectId(friendId)
+  ) {
+    return res
+      .status(400)
+      .json({ error: "Error(177.2) Invalid user or friend id input." });
+  }
+
+  const user = await User.findById(userId);
+  const friend = await User.findById(friendId);
+
+  if (!user || !friend) {
+    return res
+      .status(404)
+      .json({ error: "Error(177.3) User or friend not found." });
+  }
+
+  try {
+    let userFriendReqSent = user.friendReqSent.slice();
+    let userFriendReqReceived = user.friendReqReceived.slice();
+    let friendFriendReqSent = friend.friendReqSent.slice();
+    let friendFriendReqReceived = friend.friendReqReceived.slice();
+
+      userFriendReqSent= userFriendReqSent.filter((id)=> id !== friendId);
+      userFriendReqReceived = userFriendReqReceived.filter((id)=> id !== friendId);
+
+      friendFriendReqSent = friendFriendReqSent.filter((id)=> id !== userId);
+      friendFriendReqReceived = friendFriendReqReceived.filter((id)=> id !== userId);
+
+      user.friendReqSent = userFriendReqSent;
+      user.friendReqReceived = userFriendReqReceived;
+
+      friend.friendReqSent = friendFriendReqSent;
+      friend.friendReqReceived = friendFriendReqReceived;
+
+      await user.save();
+      await friend.save();
+      return res.status(200).json({ message: "Friend request deleted successfully." });
+    
+  } catch (err) {
+    return res.status(500).json({ error: "Error(177.4) Internal server error.", errorr: err });
+  }
+};
+
+export const cancelFriendRequest = async (req, res) => {
+  const { userId, friendId } = req.body;
+  if (userId === friendId) {
+    return res
+      .status(400)
+      .json({ error: "Error(177.5) Cannot add yourself as a friend." });
+  }
+
+  if (
+    !mongoose.isValidObjectId(userId) ||
+    !mongoose.isValidObjectId(friendId)
+  ) {
+    return res
+      .status(400)
+      .json({ error: "Error(177.6) Invalid user or friend id input." });
+  }
+
+  const user = await User.findById(userId);
+  const friend = await User.findById(friendId);
+
+  if (!user || !friend) {
+    return res
+      .status(404)
+      .json({ error: "Error(177.7) User or friend not found." });
+  }
+
+  try {
+    if (user.friendReqSent.includes(friendId)) {
+      user.friendReqSent = user.friendReqSent.filter((id) => id !== friendId);
+    }
+
+    if (friend.friendReqReceived.includes(userId)) {
+      friend.friendReqReceived = friend.friendReqReceived.filter(
+        (id) => id !== userId
+      );
+    }
+
+    await friend.save();
+    await user.save();
+
+    return res.status(200).json({ message: "Cancelled request" });
+  } catch (err) {
+    return res.status(500).json({ error: "Error(177.8) Internal server error." });
+  }
+};
+
 
 export const addUserResponse = async (req,res) =>{
   const {userId, postId, optionIndex} = req.body;

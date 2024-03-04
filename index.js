@@ -13,6 +13,7 @@ import postRouter from "./Routes/Post.Routes.js";
 import transactionRouter from "./Routes/Transaction.Routes.js";
 import userRouter from "./Routes/User.Routes.js";
 import profanityRouter from "./Routes/Profanity.Router.js";
+import searchRouter from "./Routes/Search.Routes.js";
 
 const PORT = process.env.PORT || 6666;
 const app = express();
@@ -37,6 +38,7 @@ app.use("/post", postRouter);
 app.use("/transaction", transactionRouter);
 app.use("/user", userRouter);
 app.use("/profanity", profanityRouter);
+app.use("/search", searchRouter);
 
 app.listen(PORT, () => {
   connect();

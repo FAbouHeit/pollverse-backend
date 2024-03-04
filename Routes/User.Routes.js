@@ -25,6 +25,8 @@ import {
   getAllUsers,
   getOneUser,
   sendFriendRequest,
+  cancelFriendRequest,
+  declineFriendRequest,
   signedInUser,
   addUserResponse,
   emptyResponseArray,
@@ -53,6 +55,8 @@ import {
   userRouter.post("/friend/add", addFriend);
   userRouter.post("/friend/remove", removeFriend);
   userRouter.post("/friend/request", sendFriendRequest);
+  userRouter.post("/friend/decline", declineFriendRequest);
+  userRouter.post("/friend/cancel-request", cancelFriendRequest); 
   
   userRouter.patch("/update", updateUser);
   userRouter.patch("/change-profile-picture", upload.single("image"), changeProfilePicture);
