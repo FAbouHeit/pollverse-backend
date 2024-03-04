@@ -196,7 +196,7 @@ export const signOut = async (req, res) => {
 
 export const addLike = async (req, res) => {
   const { postId, userId } = req.body;
-  console.log("UserLIke", req.body)
+
   if (!mongoose.isValidObjectId(userId) || !mongoose.isValidObjectId(postId)) {
     return res
       .status(400)
@@ -512,10 +512,8 @@ export const addFriend = async (req, res) => {
       user.community.push(userObject);
       friend.community.push(friendObject);
 
-      console.log("before: ", user.friendReqReceived)
       user.friendReqReceived = user.friendReqReceived.filter((id) => id !== friendId);
       friend.friendReqSent = user.friendReqSent.filter((id) => id !== userId);
-      console.log("after: ", user.friendReqReceived)
 
 
       await user.save();
@@ -1185,6 +1183,4 @@ export const getRoomId = async (req,res) =>{
   } catch (err){
     return res.status(500).json({ error: "Error(183) Internal server error." });
   }
-
-
 }
