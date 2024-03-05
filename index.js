@@ -22,7 +22,6 @@ const PORT = process.env.PORT || 6666;
 const app = express();
 app.use(cors({
   origin: 'https://pollverse-frontend.vercel.app',
-  optionsSuccessStatus: 200
 }));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
@@ -59,7 +58,9 @@ app.use("/search", searchRouter);
 // const SOCKET_PORT = process.env.SOCKET_PORT;
 
 const server = http.createServer(app); // create an HTTP server using express app
-const io = new Server(server);
+const io = new Server(server, {
+  cors: 'https://pollverse-frontend.vercel.app'
+});
 
 
 io.on('connection', (socket) => {
