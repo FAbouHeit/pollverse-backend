@@ -17,6 +17,7 @@ import { error } from "console";
 
 export const signIn = async (req, res) => {
   const { email, password } = req.body;
+  console.log("here??")
 
   try {
     if (!email || !password) {

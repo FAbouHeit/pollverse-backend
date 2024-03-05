@@ -20,7 +20,11 @@ import { Server } from 'socket.io';
 
 const PORT = process.env.PORT || 6666;
 const app = express();
+app.use(cors({
+  origin: 'https://pollverse-frontend.vercel.app'
+}));
 app.use(express.json());
+app.use(express.urlencoded({extended: true}))
 // app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
@@ -31,7 +35,6 @@ app.use(express.static("public"));
 // };
 
 app.use(cookieParser());
-app.use(cors());
 
 app.use("/activity", activityRouter);
 app.use("/chat", chatRouter);
@@ -55,13 +58,7 @@ app.use("/search", searchRouter);
 // const SOCKET_PORT = process.env.SOCKET_PORT;
 
 const server = http.createServer(app); // create an HTTP server using express app
-const io = new Server(server, {
-  cors: {
-    origin: '*',
-    // origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
+const io = new Server(server);
 
 
 io.on('connection', (socket) => {
