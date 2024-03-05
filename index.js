@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 const corsOption = {
-  origin: process.env.FRONT_END_PATH,
+  origin: '*',
   credentials: true,
   optionsSuccessStatus: 200,
 };
