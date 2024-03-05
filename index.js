@@ -21,7 +21,8 @@ import { Server } from 'socket.io';
 const PORT = process.env.PORT || 6666;
 const app = express();
 app.use(cors({
-  origin: 'https://pollverse-frontend.vercel.app'
+  origin: 'https://pollverse-frontend.vercel.app',
+  optionsSuccessStatus: 200
 }));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
