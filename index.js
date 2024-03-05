@@ -43,17 +43,16 @@ app.use("/user", userRouter);
 app.use("/profanity", profanityRouter);
 app.use("/search", searchRouter);
 
-app.listen(PORT, () => {
-  connect();
-  console.log(`running on port: ${PORT}`);
-  if (PORT === 6666) {
-    console.log(
-      "ERROR: issue reading port from process.env. Continue with caution! ..."
-    );
-  }
-});
+// app.listen(PORT, () => {
+//   console.log(`running on port: ${PORT}`);
+//   if (PORT === 6666) {
+//     console.log(
+//       "ERROR: issue reading port from process.env. Continue with caution! ..."
+//     );
+//   }
+// });
 
-const SOCKET_PORT = process.env.SOCKET_PORT;
+// const SOCKET_PORT = process.env.SOCKET_PORT;
 
 const server = http.createServer(app); // create an HTTP server using express app
 const io = new Server(server, {
@@ -81,5 +80,10 @@ io.on('connection', (socket) => {
 
 })
 
-io.listen(SOCKET_PORT);
+// io.listen(SOCKET_PORT);
+server.listen(PORT, () => {
+  connect();
+
+  console.log(`Server is listeningon port ${PORT}`);
+});
 
