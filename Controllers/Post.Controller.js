@@ -476,31 +476,35 @@ export const addComment = async (req,res)=>{
   export const getPublicPosts = async (req, res) => {
     try {
       let publicPosts = await Post.find({ visibility: "public" })
-    .populate({
-        path: "comments",
-        populate: [{
+        .populate({
+          path: "comments",
+          populate: [{
             path: "userId",
             model: "User"
-        }, {
+          }, {
             path: "replies",
             model: "CommentModel",
             populate: {
-                path: "userId",
-                model: "User"
+              path: "userId",
+              model: "User"
             }
-        }]
-    })
-    .populate({
-        path: "userId", // Assuming this is the other userId field you want to populate
-        model: "User"
-    })
-    .exec();
+          }]
+        })
+        .populate({
+          path: "userId",
+          model: "User"
+        })
+        .exec();
+  
+      // Reversing the order of publicPosts
+      publicPosts = publicPosts.reverse();
+  
       return res.status(200).json(publicPosts);
     } catch (error) {
-      return res.status(500).json({ error: "Error(242) Internal server error.", error: error});
+      return res.status(500).json({ error: "Error(242) Internal server error.", error: error });
     }
   };
-
+  
 
   // export const getPublicPosts = async (req, res) => {
   //   try {
