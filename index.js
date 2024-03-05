@@ -15,16 +15,18 @@ import userRouter from "./Routes/User.Routes.js";
 import profanityRouter from "./Routes/Profanity.Router.js";
 import searchRouter from "./Routes/Search.Routes.js";
 
-import http from 'http';
-import { Server } from 'socket.io';
+import http from "http";
+import { Server } from "socket.io";
 
 const PORT = process.env.PORT || 6666;
 const app = express();
-app.use(cors({
-  origin: "https://pollverse-frontend.vercel.app",
-}));
+app.use(
+  cors({
+    origin: "https://pollverse-frontend.vercel.app",
+  })
+);
 app.use(express.json());
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }));
 // app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
@@ -59,25 +61,22 @@ app.use("/search", searchRouter);
 
 const server = http.createServer(app); // create an HTTP server using express app
 const io = new Server(server, {
-  cors: 'https://pollverse-frontend.vercel.app'
+  cors: "https://pollverse-frontend.vercel.app",
 });
 
-
-io.on('connection', (socket) => {
+io.on("connection", (socket) => {
   console.log(`A User connected!`);
 
-  socket.on('message', (data, room) => {
-    socket.to(room).emit('message', data, room)
+  socket.on("message", (data, room) => {
+    socket.to(room).emit("message", data, room);
     console.log("message data :", data, room);
   });
 
-  socket.on('joinRoom', (name, roomId)=>{
+  socket.on("joinRoom", (name, roomId) => {
     socket.join(roomId);
     console.log(`${name} has joined room: `, roomId);
   });
-
-
-})
+});
 
 // io.listen(SOCKET_PORT);
 server.listen(PORT, () => {
@@ -85,4 +84,3 @@ server.listen(PORT, () => {
 
   console.log(`Server is listeningon port ${PORT}`);
 });
-
