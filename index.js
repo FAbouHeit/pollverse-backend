@@ -57,7 +57,7 @@ app.use("/search", searchRouter);
 const server = http.createServer(app); // create an HTTP server using express app
 const io = new Server(server, {
   cors: {
-    origin: ['*',"http://localhost:3000"],
+    origin: '*',
     // origin: "*",
     methods: ["GET", "POST"]
   }
