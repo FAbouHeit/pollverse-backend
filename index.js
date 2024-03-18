@@ -20,29 +20,29 @@ import { Server } from "socket.io";
 
 const PORT = process.env.PORT || 6666;
 const app = express();
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(express.static("public"));
 
-// const corsOption = {
-//   origin: '*',
-//   credentials: true,
-//   optionsSuccessStatus: 200,
-// };
+const corsOption = {
+    origin: process.env.FRONT_END_PATH,
+    credentials: true,
+    optionsSuccessStatus: 200,
+  };
+  app.use(cors(corsOption));
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET,HEAD,OPTIONS,POST,PUT,DELETE,PATCH"
-  );
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Methods",
+//     "GET,HEAD,OPTIONS,POST,PUT,DELETE,PATCH"
+//   );
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   next();
+// });
 
 app.use(cookieParser());
 
@@ -69,7 +69,7 @@ app.use("/search", searchRouter);
 
 const server = http.createServer(app); // create an HTTP server using express app
 const io = new Server(server, {
-  cors: "https://pollverse-frontend.vercel.app",
+  cors: process.env.FRONT_END_PATH,
 });
 
 io.on("connection", (socket) => {
@@ -92,3 +92,6 @@ server.listen(PORT, () => {
 
   console.log(`Server is listeningon port ${PORT}`);
 });
+
+
+//"https://pollverse-frontend.vercel.app"
