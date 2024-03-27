@@ -25,10 +25,10 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(express.static("public"));
 
 const corsOption = {
-    origin: process.env.FRONT_END_PATH,
-    credentials: true,
-    optionsSuccessStatus: 200,
-  };
+  origin: ["http://localhost:3000", process.env.FRONT_END_PATH],
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
   app.use(cors(corsOption));
 
 // app.use(function (req, res, next) {
@@ -43,6 +43,13 @@ const corsOption = {
 //   );
 //   next();
 // });
+
+// const corsOptions = {
+//   origin: 'http://localhost:3000',
+//   credentials: true,
+// };
+
+// app.use(cors(corsOptions));
 
 app.use(cookieParser());
 
