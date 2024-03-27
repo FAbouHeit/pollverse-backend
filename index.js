@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(express.static("public"));
 
 const corsOption = {
-  origin: ["http://localhost:3000", process.env.FRONT_END_PATH],
+  origin: ["https://pollverse-frontend.vercel.app", "http://localhost:3000"],
   credentials: true,
   optionsSuccessStatus: 200,
 };
