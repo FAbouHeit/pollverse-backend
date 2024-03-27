@@ -62,6 +62,10 @@ app.use("/transaction", transactionRouter);
 app.use("/user", userRouter);
 app.use("/profanity", profanityRouter);
 app.use("/search", searchRouter);
+app.use('/', (req,res)=>{
+  console.log("logged a visit to backslash");
+  res.send("hello!");
+})
 
 // app.listen(PORT, () => {
 //   console.log(`running on port: ${PORT}`);
